@@ -5,8 +5,8 @@ This extension provides functionality for other extensions to use for achieving 
 
 - Dispatching an event from Native or Java code to the OpenFL stage.
 - Temporarily disabling the BACK button. Useful for preventing our app
-  from closing when returning from a launched child activity in Android 
-  (sometimes a BACK press is propagated to our app). 
+  from closing when returning from a launched child activity in Android
+  (sometimes a BACK press is propagated to our app).
 
 
 Dependencies
@@ -25,17 +25,17 @@ Usage
 
 ### project.xml
 
-    <include path="/path/to/extensionkit-0.1" />
+    <include path="/path/to/extensionkit" />
 
 
 ### Haxe
-    
+
     class Main extends Sprite
     {
     	public function new()
         {
     		super();
-    
+
             ExtensionKit.Initialize();
 
             ...
@@ -46,14 +46,14 @@ Usage
 ### Native C++/Objective-C
 
     // In project/Build.xml, add:
-    // <compilerflag value="-I../../extensionkit-0.1/project/include"/>
+    // <compilerflag value="-I../../extensionkit/project/include"/>
 
     #include "ExtensionKit.h"
 
     void MyNativeFunction()
     {
         extensionkit::DispatchEventToHaxe(
-            "extensionkit.event.ExtensionKitTestEvent",          // event package & class 
+            "extensionkit.event.ExtensionKitTestEvent",          // event package & class
             extensionkit::CSTRING,  "extensionkit_test_native",  // 1st param: event type (string)
             extensionkit::CSTRING,  "string parameter",          // 2nd param: string
             extensionkit::CINT,     12345,                       // 3nd param: C int
@@ -74,12 +74,12 @@ Usage
         public static void TriggerTestEvent()
         {
             HaxeCallback.DispatchEventToHaxe(
-                "extensionkit.event.ExtensionKitTestEvent",     // event package & class 
+                "extensionkit.event.ExtensionKitTestEvent",     // event package & class
                 new Object[] {
                     "extensionkit_test_jni",                    // 1st param: event type (string)
                     "string parameter from JNI",                // 2nd param: any JSON-serializable type
                     54321,                                      // ...
-                    5678.1234});            
+                    5678.1234});
         }
 
         public static void LaunchChildActivity()
@@ -94,5 +94,5 @@ Usage
         public void onResume()
         {
             MobileDevice.EnableBackButton();
-        }     
+        }
     }
