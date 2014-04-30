@@ -1,17 +1,41 @@
 ExtensionKit
 ============
 
-This extension provides functionality for other extensions to use for achieving common functionality. Currently this includes:
+### A library of common functionality designed for use by other Native & Java OpenFL extensions. 
 
-- Dispatching an event from Native or Java code to the OpenFL stage.
-- Temporarily disabling the BACK button. Useful for preventing our app
-  from closing when returning from a launched child activity in Android
-  (sometimes a BACK press is propagated to our app).
+- ##### Dispatching events from C++ or Java code to the OpenFL stage
+
+    - Provides a unified interface for triggering an OpenFL event from 
+    C++ or Java code via a single function call, saving some boilerplate.
+
+    - Overcomes a JNI limitation of 4 parameters of basic types in HaxeObject method calls. Achieved by internally JSON-encoding & decoding the parameters, so that passing nested Array & Mapping types as event parameters should work.
+
+
+- ##### Temporarily disabling the Android BACK button from Java code
+
+    - Say an extension launches a different view or external activity. The user then
+    cancels that activity with the Android BACK button. Occasionally that button press propagates
+    into the OpenFL app and closes it as well.
+
+    - A workaround for this is to tempoarily disable the BACK button before launching the said view or activity. Then, reenable the BACK button when onResume() is called. See example below.
+
+
+Todo
+----
+
+- The above approach for calling back from Native/Java code to Haxe is limited to dispatching stage events only. It might be worth generalizing to arbitrary callbacks so that CFFI and JNI callbacks can be invoked in a consistent manner and without parameter limitations.
+
+    - For CFFI, automatically wrap the callback with `AutoGCRoot` & automatically allocate CFFI values for parameters when callback is invoked. Provide support for pre-existing CFFI values and/or arrays & structs.
+
+    - For JNI, wrap a Haxe function object in a temporary class with a Call() method and pass that along
+    as the HaxeObject parameter thorugh the JNI. Use internal JSON-encoding/decoding when invoking the callback
+    to overcome parameter limitations. 
 
 
 Dependencies
 ------------
 None.
+
 
 Installation
 ------------
@@ -23,63 +47,77 @@ Installation
 Usage
 -----
 
-### project.xml
+### Your Extension's `include.xml`
 
     <include path="/path/to/extensionkit" />
 
 
-### Haxe
+### Your Extension's Haxe Class
+    
+    class YourExtension
+    {
+        public static function Initialize() : Void
+        {
+            ExtensionKit.Initialize();
+            ...
+        }
+
+        ...
+    }
+
+
+### Your Application's Main Class
 
     class Main extends Sprite
     {
     	public function new()
         {
     		super();
-
-            ExtensionKit.Initialize();
+    
+            YourExtension.Initialize();
 
             ...
         }
     }
 
 
-### Native C++/Objective-C
+### Your Extension's Native C++/Objective-C Code
 
     // In project/Build.xml, add:
     // <compilerflag value="-I../../extensionkit/project/include"/>
 
     #include "ExtensionKit.h"
 
-    void MyNativeFunction()
+    void YourNativeFunction()
     {
         extensionkit::DispatchEventToHaxe(
-            "extensionkit.event.ExtensionKitTestEvent",          // event package & class
+            "extensionkit.event.ExtensionKitTestEvent",          // event package & class 
             extensionkit::CSTRING,  "extensionkit_test_native",  // 1st param: event type (string)
-            extensionkit::CSTRING,  "string parameter",          // 2nd param: string
+            extensionkit::CSTRING,  "string parameter",          // 2nd param: C string
             extensionkit::CINT,     12345,                       // 3nd param: C int
             extensionkit::CDOUBLE,  1234.5678,                   // 4th param: C double
             extensionkit::CEND);                                 // End of params
     }
 
 
-### Java
+### Your Extension's Java Code
 
     // In dependencies/android/project.properties, add:
     // android.library.reference.2=../extensionkit
 
     import org.haxe.extension.extensionkit.HaxeCallback;
 
-    public class MyClass
+    public class YourJavaExtension
     {
         public static void TriggerTestEvent()
         {
             HaxeCallback.DispatchEventToHaxe(
-                "extensionkit.event.ExtensionKitTestEvent",     // event package & class
+                "extensionkit.event.ExtensionKitTestEvent",     // event package & class 
                 new Object[] {
                     "extensionkit_test_jni",                    // 1st param: event type (string)
                     "string parameter from JNI",                // 2nd param: any JSON-serializable type
                     54321,                                      // ...
-                    5678.1234});
+                    5678.1234});            
         }
 
         public static void LaunchChildActivity()
@@ -94,5 +132,5 @@ Usage
         public void onResume()
         {
             MobileDevice.EnableBackButton();
-        }
+        }     
     }
