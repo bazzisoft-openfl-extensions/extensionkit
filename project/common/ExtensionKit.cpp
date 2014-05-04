@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "ExtensionKit.h"
+#include "base64/base64.h"
 
 
 namespace extensionkit
@@ -56,5 +57,25 @@ namespace extensionkit
         {
             val_call2(g_haxeCallbackForDispatchingEvents->get(), alloc_string(eventClassSpec), ar);
         }
+    }
+    
+    extern "C" int Base64EncodedLength(int byteDataSrcLength)
+    {
+        return Base64encode_len(byteDataSrcLength);
+    }    
+    
+    extern "C" int Base64Encode(char* base64Dest, const void* byteDataSrc, int byteDataSrcLength)
+    {
+        return Base64encode(base64Dest, (const char*) byteDataSrc, byteDataSrcLength);
+    }
+    
+    extern "C" int Base64DecodedLength(const char* base64Src)
+    {
+        return Base64decode_len(base64Src);
+    }
+    
+    extern "C" int Base64Decode(void* byteDataDest, const char* base64Src)
+    {
+        return Base64decode((char*) byteDataDest, base64Src);
     }
 }

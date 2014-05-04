@@ -9,6 +9,7 @@
 		<file name="common/ExternalInterface.cpp"/>
 		<file name="common/ExtensionKitPrivate.cpp"/>
         <file name="common/ExtensionKit.cpp"/>
+        <file name="common/base64/base64.c"/>
 
 	</files>
 
