@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include "ExtensionKit.h"
 #include "base64/base64.h"
+#include "../iphone/ExtensionKitIPhone.h"
 
 
 namespace extensionkit
@@ -77,5 +78,19 @@ namespace extensionkit
     extern "C" int Base64Decode(void* byteDataDest, const char* base64Src)
     {
         return Base64decode((char*) byteDataDest, base64Src);
+    }
+    
+    extern "C" FILE* CreateTemporaryFile(char* outPath)
+    {
+        #ifdef IPHONE
+        
+        return iphone::CreateTemporaryFile(outPath);
+        
+        #else
+        
+        printf("ExtensionKit::CreateTemporaryFile() not implemented on this platform.\n");
+        return NULL;
+        
+        #endif
     }
 }

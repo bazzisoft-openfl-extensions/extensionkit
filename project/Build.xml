@@ -13,6 +13,13 @@
 
 	</files>
 
+	<files id="iphone">
+
+        <compilerflag value="-Iinclude"/>
+        <file name="iphone/ExtensionKitIPhone.mm"/>
+
+	</files>    
+    
 	<set name="SLIBEXT" value=".lib" if="windows"/>
 	<set name="SLIBEXT" value=".a" unless="windows"/>
 	<set name="SLIBEXT" value=".so" if="webos"/>
@@ -24,7 +31,8 @@
 		<outdir name="../ndll/${BINDIR}"/>
 		<ext value=".ndll" if="windows || mac || linux"/>
 		<files id="common"/>
-
+        <files id="iphone" if="iphone"/>
+        
 	</target>
 
 	<target id="default">

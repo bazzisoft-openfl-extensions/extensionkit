@@ -17,6 +17,7 @@ namespace extensionkit
     extern "C" int Base64Encode(char* base64Dest, const void* byteDataSrc, int byteDataSrcLength);
     extern "C" int Base64DecodedLength(const char* base64Src);
     extern "C" int Base64Decode(void* byteDataDest, const char* base64Src);    
+    extern "C" FILE* CreateTemporaryFile(char* outPath);
 }
 
 
