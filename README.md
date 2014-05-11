@@ -20,6 +20,11 @@ ExtensionKit
     - A workaround for this is to tempoarily disable the BACK button before launching the said view or activity. Then, reenable the BACK button when onResume() is called. See example below.
 
 
+- ##### Misc common functionality for extensions
+
+    - Temporary files, encodings, image manipulation, etc.
+ 
+
 Todo
 ----
 
@@ -90,6 +95,7 @@ Usage
 
     void YourNativeFunction()
     {
+        // Dispatch event to OpenFL stage
         extensionkit::DispatchEventToHaxe(
             "extensionkit.event.ExtensionKitTestEvent",          // event package & class 
             extensionkit::CSTRING,  "extensionkit_test_native",  // 1st param: event type (string)
@@ -97,6 +103,11 @@ Usage
             extensionkit::CINT,     12345,                       // 3nd param: C int
             extensionkit::CDOUBLE,  1234.5678,                   // 4th param: C double
             extensionkit::CEND);                                 // End of params
+
+        ...        
+
+        // Image manipulation - iOS only, include "ExtensionKitIPhone.h"
+        UIImage* rotated = extensionkit::iphone::RotateUIImageToOrientationUp(srcImage);
     }
 
 
@@ -106,18 +117,28 @@ Usage
     // android.library.reference.2=../extensionkit
 
     import org.haxe.extension.extensionkit.HaxeCallback;
+    import org.haxe.extension.extensionkit.ImageUtils;
 
     public class YourJavaExtension
     {
         public static void TriggerTestEvent()
         {
+            // Dispatch event to OpenFL stage
             HaxeCallback.DispatchEventToHaxe(
                 "extensionkit.event.ExtensionKitTestEvent",     // event package & class 
                 new Object[] {
                     "extensionkit_test_jni",                    // 1st param: event type (string)
                     "string parameter from JNI",                // 2nd param: any JSON-serializable type
                     54321,                                      // ...
-                    5678.1234});            
+                    5678.1234});
+
+            ...
+
+            // Image manpulation
+            File imageFile = new File("/path/to/image");
+            Bitmap bitmap = ImageUtils.LoadBitmap(imageFile);
+            bitmap = ImageUtils.ResizeBitmap(bitmap, 250, 200);
+            ImageUtils.SaveBitmapAsJPEG(bitmap, imageFile, 0.9f);          
         }
 
         public static void LaunchChildActivity()

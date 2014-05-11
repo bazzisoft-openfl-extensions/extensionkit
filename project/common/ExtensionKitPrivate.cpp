@@ -8,29 +8,42 @@
 #include "ExtensionKit.h"
 
 
+//
+// Functions internal to ExtensionKit.hx
+//
+
+static AutoGCRoot* g_haxeCallbackForDispatchingEvents = NULL;
+
+
 namespace extensionkit
 {
-    AutoGCRoot* g_haxeCallbackForDispatchingEvents = 0;
-
-
-    void SetHaxeCallbackForDispatchingEvents(AutoGCRoot* haxeCallback)
+    namespace _private
     {
-        if (g_haxeCallbackForDispatchingEvents)
+        AutoGCRoot* GetHaxeCallbackForDispatchingEvents()
         {
-            delete g_haxeCallbackForDispatchingEvents;
+            return g_haxeCallbackForDispatchingEvents;
+        }
+        
+        
+        void SetHaxeCallbackForDispatchingEvents(AutoGCRoot* haxeCallback)
+        {
+            if (g_haxeCallbackForDispatchingEvents)
+            {
+                delete g_haxeCallbackForDispatchingEvents;
+            }
+
+            g_haxeCallbackForDispatchingEvents = haxeCallback;
         }
 
-        g_haxeCallbackForDispatchingEvents = haxeCallback;
-    }
 
-
-    void TriggerTestEvent()
-    {
-        DispatchEventToHaxe("extensionkit.event.ExtensionKitTestEvent",
-                            CSTRING, "extensionkit_test_native",
-                            CSTRING, "string parameter",
-                            CINT, 12345,
-                            CDOUBLE, 1234.5678,
-                            CEND);
+        void TriggerTestEvent()
+        {
+            DispatchEventToHaxe("extensionkit.event.ExtensionKitTestEvent",
+                                CSTRING, "extensionkit_test_native",
+                                CSTRING, "string parameter",
+                                CINT, 12345,
+                                CDOUBLE, 1234.5678,
+                                CEND);
+        }
     }
 }

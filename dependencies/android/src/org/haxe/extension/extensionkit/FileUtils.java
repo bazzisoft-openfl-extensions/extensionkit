@@ -62,12 +62,4 @@ public class FileUtils
         }
         return count;
     }
-    
-    public static int[] GetBitmapDimensions(File bitmap)
-    {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(bitmap.getAbsolutePath(), options);
-        return new int[] { options.outWidth, options.outHeight };
-    }
 }

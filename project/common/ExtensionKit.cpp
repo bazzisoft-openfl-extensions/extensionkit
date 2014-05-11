@@ -8,14 +8,16 @@
 #include <stdarg.h>
 #include "ExtensionKit.h"
 #include "base64/base64.h"
-#include "../iphone/ExtensionKitIPhone.h"
+#include "ExtensionKitPrivate.h"
+#include "../iphone/ExtensionKitIPhonePrivate.h"
 
+
+//
+// Common functions called from your C/C++ extension code
+//
 
 namespace extensionkit
 {
-    extern AutoGCRoot* g_haxeCallbackForDispatchingEvents;
-
-
     extern "C" void DispatchEventToHaxe(const char* eventClassSpec, ...)
     {
         bool foundAllArgs = false;
@@ -54,9 +56,10 @@ namespace extensionkit
 
         va_end(params);
 
-        if (g_haxeCallbackForDispatchingEvents != 0)
+        AutoGCRoot* haxeCallback = _private::GetHaxeCallbackForDispatchingEvents();
+        if (haxeCallback != NULL)
         {
-            val_call2(g_haxeCallbackForDispatchingEvents->get(), alloc_string(eventClassSpec), ar);
+            val_call2(haxeCallback->get(), alloc_string(eventClassSpec), ar);
         }
     }
     
@@ -84,7 +87,7 @@ namespace extensionkit
     {
         #ifdef IPHONE
         
-        return iphone::CreateTemporaryFile(outPath);
+        return iphone::_private::CreateTemporaryFile(outPath);
         
         #else
         
