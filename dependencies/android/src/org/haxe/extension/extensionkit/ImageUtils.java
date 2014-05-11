@@ -1,7 +1,6 @@
 package org.haxe.extension.extensionkit;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -57,12 +56,12 @@ public class ImageUtils
     
     public static Bitmap ResizeBitmap(Bitmap srcBitmap, int width, int height)
     {
-        return srcBitmap.createScaledBitmap(srcBitmap, width, height, true);
+        return Bitmap.createScaledBitmap(srcBitmap, width, height, true);
     }    
     
     public static Bitmap CropBitmap(Bitmap srcBitmap, int x, int y, int width, int height)
     {
-        return srcBitmap.createBitmap(srcBitmap, x, y, width, height);
+        return Bitmap.createBitmap(srcBitmap, x, y, width, height);
     }
     
     public static Dimensions GetBitmapFileDimensions(File bitmapFile)

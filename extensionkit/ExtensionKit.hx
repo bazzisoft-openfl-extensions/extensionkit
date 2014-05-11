@@ -5,7 +5,6 @@ import flash.display.Sprite;
 import flash.display.Stage;
 import haxe.Json;
 
-
 #if cpp
 import cpp.Lib;
 #elseif neko
@@ -24,11 +23,19 @@ class ExtensionKit
     #if cpp
     private static var extensionkit_set_haxe_callback_for_dispatching_events = null;
     private static var extensionkit_trigger_test_event = null;
+    private static var extensionkit_create_temporary_file = null;
+    private static var extensionkit_get_temp_directory = null;
+    private static var extensionkit_get_private_app_files_directory = null;
+    private static var extensionkit_get_public_documents_directory = null;
     #end
 
     #if android
     private static var extensionkit_set_haxe_callback_for_dispatching_events_jni = null;
     private static var extensionkit_trigger_test_event_jni = null;
+    private static var extensionkit_create_temporary_file_jni = null;
+    private static var extensionkit_get_temp_directory_jni = null;
+    private static var extensionkit_get_private_app_files_directory_jni = null;
+    private static var extensionkit_get_public_documents_directory_jni = null;
     #end
 
     public static var stage(get, never) : Stage;
@@ -45,11 +52,19 @@ class ExtensionKit
         #if cpp
         extensionkit_set_haxe_callback_for_dispatching_events = Lib.load("extensionkit", "extensionkit_set_haxe_callback_for_dispatching_events", 1);
         extensionkit_trigger_test_event = Lib.load("extensionkit", "extensionkit_trigger_test_event", 0);
+        extensionkit_create_temporary_file = Lib.load("extensionkit", "extensionkit_create_temporary_file", 0);
+        extensionkit_get_temp_directory = Lib.load("extensionkit", "extensionkit_get_temp_directory", 0);
+        extensionkit_get_private_app_files_directory = Lib.load("extensionkit", "extensionkit_get_private_app_files_directory", 0);
+        extensionkit_get_public_documents_directory = Lib.load("extensionkit", "extensionkit_get_public_documents_directory", 0);
         #end
 
         #if android
         extensionkit_set_haxe_callback_for_dispatching_events_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "SetHaxeCallbackForDispatchingEvents", "(Lorg/haxe/lime/HaxeObject;Ljava/lang/String;)V");
         extensionkit_trigger_test_event_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "TriggerTestEvent", "()V");
+        extensionkit_create_temporary_file_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "CreateTemporaryFile", "()Ljava/lang/String;");
+        extensionkit_get_temp_directory_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "GetTempDirectory", "()Ljava/lang/String;");
+        extensionkit_get_private_app_files_directory_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "GetPrivateAppFilesDirectory", "()Ljava/lang/String;");
+        extensionkit_get_public_documents_directory_jni = JNI.createStaticMethod("org.haxe.extension.extensionkit._private.ExtensionKit", "GetPublicDocumentsDirectory", "()Ljava/lang/String;");
         #end
 
         #if cpp
@@ -77,7 +92,73 @@ class ExtensionKit
         CreateAndDispatchEvent("extensionkit.event.ExtensionKitTestEvent", [ExtensionKitTestEvent.TEST_NATIVE, "string parameter", 12345, 1234.5678]);
         #end
     }
+    
+    public static function CreateTemporaryFile() : String
+    {
+        #if android
+        return extensionkit_create_temporary_file_jni();
+        #elseif cpp
+        return extensionkit_create_temporary_file();
+        #else
+        return null;
+        #end
+    }
 
+    public static function GetTempDirectory() : String
+    {
+        #if android
+        return extensionkit_get_temp_directory_jni();
+        #elseif (cpp && mobile)
+        return extensionkit_get_temp_directory();
+        #elseif !flash
+        return VerifyDirectoryExists(flash.filesystem.File.applicationStorageDirectory.nativePath);
+        #else
+        return null;
+        #end
+    }
+    
+    public static function GetPrivateAppFilesDirectory() : String
+    {
+        #if android
+        return extensionkit_get_private_app_files_directory_jni();
+        #elseif (cpp && mobile)
+        return extensionkit_get_private_app_files_directory();
+        #elseif !flash
+        return VerifyDirectoryExists(flash.filesystem.File.applicationStorageDirectory.nativePath);
+        #else
+        return null;
+        #end
+    }
+    
+    public static function GetPublicDocumentsDirectory() : String
+    {
+        #if android
+        return extensionkit_get_public_documents_directory_jni();
+        #elseif (cpp && mobile)
+        return extensionkit_get_public_documents_directory();
+        #elseif !flash
+        return VerifyDirectoryExists(flash.filesystem.File.documentsDirectory.nativePath);
+        #else
+        return null;
+        #end
+    }
+    
+    //---------------------------------
+    // Private Methods
+    //---------------------------------
+    
+    private static function VerifyDirectoryExists(path:String) : String
+    {
+        #if !flash
+        if (!sys.FileSystem.exists(path))
+        {
+            sys.FileSystem.createDirectory(path);
+        }        
+        #end
+        
+        return path;
+    }
+    
     private static function TraceReceivedTestEvent(e:ExtensionKitTestEvent) : Void
     {
         trace(e);

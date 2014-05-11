@@ -8,7 +8,10 @@ namespace extensionkit
     {
         namespace _private
         {
-            FILE* CreateTemporaryFile(char* outPath);
+            const char* GetTempDirectory();
+            const char* GetPrivateAppFilesDirectory();
+            const char* GetPublicDocumentsDirectory();    
+            const char* CreateTemporaryFile(FILE** outFp);
         }
     }
 }

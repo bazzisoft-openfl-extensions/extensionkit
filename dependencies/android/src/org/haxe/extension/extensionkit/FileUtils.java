@@ -9,13 +9,38 @@ import java.io.OutputStream;
 
 import org.haxe.extension.Extension;
 
-import android.graphics.BitmapFactory;
+import android.os.Environment;
 
 
 public class FileUtils
 {
     private static final int EOF = -1;
     
+    public static File GetTempDirectory()
+    {   
+        return VerifyDirectoryExists(Extension.mainActivity.getCacheDir());
+    }
+    
+    public static File GetPrivateAppFilesDirectory()
+    {
+        return VerifyDirectoryExists(Extension.mainActivity.getFilesDir());
+    }
+    
+    public static File GetPublicDocumentsDirectory()
+    {
+        return VerifyDirectoryExists(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+    }
+    
+    public static File VerifyDirectoryExists(File dir)
+    {
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+        
+        return dir; 
+    }
+
     public static File CreateTemporaryFile() throws IOException
     {
         return CreateTemporaryFile(false);
@@ -27,19 +52,14 @@ public class FileUtils
         
         if (useExternalStorage)
         {
-            outputDir = Extension.mainActivity.getExternalFilesDir(null);
+            outputDir = VerifyDirectoryExists(Extension.mainActivity.getExternalCacheDir());
         }
         else
         {
-            outputDir = Extension.mainActivity.getCacheDir();
+            outputDir = GetTempDirectory();
         }
         
-        if (!outputDir.exists())
-        {
-            outputDir.mkdirs();
-        }
-        
-        File outputFile = File.createTempFile("tempfile", null, outputDir);
+        File outputFile = File.createTempFile("extensionkit", null, outputDir);
         return outputFile;
     }
     

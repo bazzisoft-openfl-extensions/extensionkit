@@ -4,36 +4,73 @@
 #include <stdlib.h>
 
 
+static char g_filePathBuffer[2048];
+
+
 namespace extensionkit
 {
     namespace iphone
     {
         namespace _private
         {
-            FILE* CreateTemporaryFile(char* outPath)
+            const char* VerifyDirectoryExistsAndReturnPath(NSString* path)
             {
-                NSString* tempFileTemplate = [NSTemporaryDirectory() stringByAppendingPathComponent:@"tempfile.XXXXXX"];
-                const char* tempFileTemplateCString = [tempFileTemplate fileSystemRepresentation];
-                char* tempFileNameCString = (char*) malloc(strlen(tempFileTemplateCString) + 1);
-                strcpy(tempFileNameCString, tempFileTemplateCString);
-                int fileDescriptor = mkstemp(tempFileNameCString);
+                if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+                {
+                    if (![[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil])
+                    {
+                        return NULL;
+                    }
+                }
+                
+                [path getCString:g_filePathBuffer maxLength:sizeof(g_filePathBuffer)/sizeof(*g_filePathBuffer) encoding:NSUTF8StringEncoding];
+                return g_filePathBuffer;
+            }
+            
+            const char* GetTempDirectory()
+            {
+                NSString* path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+                return VerifyDirectoryExistsAndReturnPath(path);
+            }
+            
+            const char* GetPrivateAppFilesDirectory()
+            {
+                NSString* path = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+                return VerifyDirectoryExistsAndReturnPath(path);
+            }
+            
+            const char* GetPublicDocumentsDirectory()
+            {
+                NSString* path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+                return VerifyDirectoryExistsAndReturnPath(path);
+            }
+            
+            const char* CreateTemporaryFile(FILE** outFp)
+            {
+                NSString* tempFileTemplate = [NSTemporaryDirectory() stringByAppendingPathComponent:@"extensionkit.XXXXXX"];
+                strcpy(g_filePathBuffer, [tempFileTemplate fileSystemRepresentation]);
+                int fileDescriptor = mkstemp(g_filePathBuffer);
              
                 if (fileDescriptor == -1)
                 {
-                    // handle file creation failure
-                    free(tempFileNameCString);
+                    if (outFp)
+                    {
+                        *outFp = NULL;
+                    }
+                    
                     return NULL;
                 }
              
-                if (outPath != NULL)
+                if (outFp != NULL)
                 {
-                    // copy our file path to the passed parameter if given
-                    strcpy(outPath, tempFileNameCString);
+                    *outFp = fdopen(fileDescriptor, "w+");
+                }
+                else
+                {
+                    close(fileDescriptor);
                 }
                 
-                free(tempFileNameCString);
-                
-                return fdopen(fileDescriptor, "w+");
+                return g_filePathBuffer;
             }
         }
     }

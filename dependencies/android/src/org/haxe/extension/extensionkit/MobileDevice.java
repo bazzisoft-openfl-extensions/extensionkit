@@ -1,6 +1,5 @@
 package org.haxe.extension.extensionkit;
 
-import org.haxe.extension.extensionkit.Trace;
 import org.haxe.extension.extensionkit._private.ExtensionKit;
 
 import android.os.Handler;

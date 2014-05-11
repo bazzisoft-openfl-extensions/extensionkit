@@ -22,7 +22,7 @@ ExtensionKit
 
 - ##### Misc common functionality for extensions
 
-    - Temporary files, encodings, image manipulation, etc.
+    - Temporary files, determining standard directories, encodings, image manipulation, etc.
  
 
 Todo

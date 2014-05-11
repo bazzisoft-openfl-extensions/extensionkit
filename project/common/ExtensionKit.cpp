@@ -83,15 +83,57 @@ namespace extensionkit
         return Base64decode((char*) byteDataDest, base64Src);
     }
     
-    extern "C" FILE* CreateTemporaryFile(char* outPath)
+    extern "C" const char* GetTempDirectory()
     {
         #ifdef IPHONE
         
-        return iphone::_private::CreateTemporaryFile(outPath);
+        return iphone::_private::GetTempDirectory();
         
         #else
         
-        printf("ExtensionKit::CreateTemporaryFile() not implemented on this platform.\n");
+        printf("ExtensionKit::GetTempDirectory() not yet implemented on this platform.\n");
+        return NULL;
+        
+        #endif
+    }
+    
+    extern "C" const char* GetPrivateAppFilesDirectory()
+    {
+        #ifdef IPHONE
+        
+        return iphone::_private::GetPrivateAppFilesDirectory();
+        
+        #else
+        
+        printf("ExtensionKit::GetPrivateAppFilesDirectory() not yet implemented on this platform.\n");
+        return NULL;
+        
+        #endif
+    }
+    
+    extern "C" const char* GetPublicDocumentsDirectory()
+    {
+        #ifdef IPHONE
+        
+        return iphone::_private::GetPublicDocumentsDirectory();
+        
+        #else
+        
+        printf("ExtensionKit::GetPublicDocumentsDirectory() not yet implemented on this platform.\n");
+        return NULL;
+        
+        #endif
+    }
+    
+    extern "C" const char* CreateTemporaryFile(FILE** outFp)
+    {
+        #ifdef IPHONE
+        
+        return iphone::_private::CreateTemporaryFile(outFp);
+        
+        #else
+        
+        printf("ExtensionKit::CreateTemporaryFile() not yet implemented on this platform.\n");
         return NULL;
         
         #endif

@@ -1,8 +1,10 @@
 package org.haxe.extension.extensionkit._private;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.haxe.extension.extensionkit.FileUtils;
 import org.haxe.extension.extensionkit.Trace;
 import org.haxe.lime.HaxeObject;
 
@@ -74,18 +76,6 @@ public class ExtensionKit extends org.haxe.extension.Extension
     }
 
     /**
-     * Simulates a event dispatch callback from an extension.
-     */
-    public static void TriggerTestEvent()
-    {
-        org.haxe.extension.extensionkit.HaxeCallback.DispatchEventToHaxe("extensionkit.event.ExtensionKitTestEvent", new Object[] {
-                                                                             "extensionkit_test_jni",
-                                                                             "string parameter from JNI",
-                                                                             54321,
-                                                                             5678.1234});
-    }
-
-    /**
      * Invokes the haxe callback to dispatch the event. Don't use this, use
      * HaxeCallback.DispatchEventToHaxe().
      */
@@ -110,7 +100,59 @@ public class ExtensionKit extends org.haxe.extension.Extension
             }
         });
     }
+    
+    /**
+     * Simulates a event dispatch callback from an extension.
+     */
+    public static void TriggerTestEvent()
+    {
+        org.haxe.extension.extensionkit.HaxeCallback.DispatchEventToHaxe("extensionkit.event.ExtensionKitTestEvent", new Object[] {
+                                                                             "extensionkit_test_jni",
+                                                                             "string parameter from JNI",
+                                                                             54321,
+                                                                             5678.1234});
+    }
 
+    /**
+     * Return a directory for temporary files.
+     */
+    public static String GetTempDirectory()
+    {   
+        return FileUtils.GetTempDirectory().getAbsolutePath();
+    }
+    
+    /**
+     * Return a directory for saving private, persistent app files.
+     */
+    public static String GetPrivateAppFilesDirectory()
+    {
+        return FileUtils.GetPrivateAppFilesDirectory().getAbsolutePath();
+    }
+    
+    /**
+     * Return a directory for saving shared documents.
+     */
+    public static String GetPublicDocumentsDirectory()
+    {
+        return FileUtils.GetPublicDocumentsDirectory().getAbsolutePath();
+    }
+    
+    /**
+     * Create an empty temporary file and returns its path.
+     */
+    
+    public static String CreateTemporaryFile()
+    {
+        try
+        {
+            return FileUtils.CreateTemporaryFile().getAbsolutePath();
+        }
+        catch (IOException e)
+        {
+            return null;
+        }        
+    }
+    
     /**
      * Called when an activity you launched exits, giving you the requestCode
      * you started it with, the resultCode it returned, and any additional data
