@@ -14,6 +14,10 @@ namespace extensionkit
 
     // Creates an eventClassSpec class in Haxe and dispatches it to the OpenFL stage
     extern "C" void DispatchEventToHaxe(const char* eventClassSpec, ...);
+	
+	// Creates an eventClassSpec class in Haxe and dispatches it to the Haxe IEventDispatcher
+	// instance registered with ExtensionKit.RegisterEventDispatcher() with the given eventDispatcherId.
+	extern "C" void DispatchEventToHaxeInstance(int eventDispatcherId, const char* eventClassSpec, ...);
     
     // Return Base64 encoded length of the specified byte buffer size
     extern "C" int Base64EncodedLength(int byteDataSrcLength);

@@ -18,51 +18,26 @@
 
 namespace extensionkit
 {
-    extern "C" void DispatchEventToHaxe(const char* eventClassSpec, ...)
-    {
-        bool foundAllArgs = false;
-        value ar = alloc_array(0);
-
+	extern "C" void DispatchEventToHaxe(const char* eventClassSpec, ...)
+	{
         va_list params;
         va_start(params, eventClassSpec);
-
-        while (!foundAllArgs)
-        {
-            int type = va_arg(params, int);
-            switch (type)
-            {
-                case CEND:
-                    foundAllArgs = true;
-                    break;
-
-                case CSTRING:
-                    val_array_push(ar, alloc_string(va_arg(params, char*)));
-                    break;
-
-                case CINT:
-                    val_array_push(ar, alloc_int(va_arg(params, int)));
-                    break;
-
-                case CDOUBLE:
-                    val_array_push(ar, alloc_float(va_arg(params, double)));
-                    break;
-
-                default:
-                    printf("extensionkit::DispatchEventToHaxe() received invalid type %d, aborting.", type);
-                    va_end(params);
-                    return;
-            }
-        }
-
-        va_end(params);
-
-        AutoGCRoot* haxeCallback = _private::GetHaxeCallbackForDispatchingEvents();
-        if (haxeCallback != NULL)
-        {
-            val_call2(haxeCallback->get(), alloc_string(eventClassSpec), ar);
-        }
-    }
-    
+		
+		_private::InvokeHaxeCallbackFunctionForDispatchingEvents(0, eventClassSpec, params);
+		
+		va_end(params);
+	}
+	
+	extern "C" void DispatchEventToHaxeInstance(int eventDispatcherId, const char* eventClassSpec, ...)
+	{
+        va_list params;
+        va_start(params, eventClassSpec);
+		
+		_private::InvokeHaxeCallbackFunctionForDispatchingEvents(eventDispatcherId, eventClassSpec, params);
+		
+		va_end(params);
+	}
+	
     extern "C" int Base64EncodedLength(int byteDataSrcLength)
     {
         return Base64encode_len(byteDataSrcLength);

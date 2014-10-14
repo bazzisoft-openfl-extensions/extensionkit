@@ -44,13 +44,15 @@ public class ExtensionKit extends org.haxe.extension.Extension
 {
     private static class HaxeEventSpec
     {
-        public HaxeEventSpec(final String eventClassSpec, final Object[] args)
+        public HaxeEventSpec(final int eventDispatcherId, final String eventClassSpec, final Object[] args)
         {
+            this.eventDispatcherId = eventDispatcherId;
             this.eventClassSpec = eventClassSpec;
             this.args = args;
                     
         }
         
+        public final int eventDispatcherId;
         public final String eventClassSpec;
         public final Object[] args;
     }
@@ -71,7 +73,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
         while (!s_queuedEvents.isEmpty())
         {
             HaxeEventSpec e = s_queuedEvents.remove();
-            InvokeHaxeCallbackFunctionForDispatchingEvents(e.eventClassSpec, e.args);
+            InvokeHaxeCallbackFunctionForDispatchingEvents(e.eventDispatcherId, e.eventClassSpec, e.args);
         }
     }
 
@@ -79,7 +81,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
      * Invokes the haxe callback to dispatch the event. Don't use this, use
      * HaxeCallback.DispatchEventToHaxe().
      */
-    public static void InvokeHaxeCallbackFunctionForDispatchingEvents(final String eventClassSpec, final Object[] args)
+    public static void InvokeHaxeCallbackFunctionForDispatchingEvents(final int eventDispatcherId, final String eventClassSpec, final Object[] args)
     {
         if (s_haxeCallbackObjectForDispatchingEvents == null)
         {
@@ -87,7 +89,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
             // but an extension is already sending us events. Queue them up for resending
             // once we have a callback.
             Trace.Info("ExtensionKit not yet initialized from Haxe; Queuing up event " + eventClassSpec);
-            s_queuedEvents.add(new HaxeEventSpec(eventClassSpec, args));
+            s_queuedEvents.add(new HaxeEventSpec(eventDispatcherId, eventClassSpec, args));
             return;
         }
         
@@ -96,7 +98,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
         mainActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                s_haxeCallbackObjectForDispatchingEvents.call2(s_haxeCallbackFunctionNameForDispatchingEvents, eventClassSpec, argsJSON);
+                s_haxeCallbackObjectForDispatchingEvents.call3(s_haxeCallbackFunctionNameForDispatchingEvents, eventDispatcherId, eventClassSpec, argsJSON);
             }
         });
     }

@@ -1,6 +1,7 @@
 package extensionkit;
 import extensionkit.event.ExtensionKitTestEvent;
 import flash.events.Event;
+import flash.events.IEventDispatcher;
 import flash.display.Sprite;
 import flash.display.Stage;
 import haxe.Json;
@@ -19,6 +20,8 @@ import openfl.utils.JNI;
 class ExtensionKit
 {
     private static var s_initialized:Bool = false;
+	private static var s_nextEventDispatcherId:Int = 1;
+	private static var s_eventDispatcherMap:Map<Int, IEventDispatcher> = new Map<Int, IEventDispatcher>();
 
     #if cpp
     private static var extensionkit_set_haxe_callback_for_dispatching_events = null;
@@ -75,6 +78,18 @@ class ExtensionKit
         extensionkit_set_haxe_callback_for_dispatching_events_jni(ExtensionKit, "CreateAndDispatchEventFromJNI");
         #end
     }
+	
+	public static function RegisterEventDispatcher(obj:IEventDispatcher) : Int
+	{
+		var id = s_nextEventDispatcherId++;
+		s_eventDispatcherMap.set(id, obj);
+		return id;
+	}
+	
+	public static function UnregisterEventDispatcher(eventDispatcherId:Int) : Void
+	{
+		s_eventDispatcherMap.remove(eventDispatcherId);
+	}
 
     public static function TriggerTestEvent() : Void
     {
@@ -169,7 +184,7 @@ class ExtensionKit
      * Creates an event object from the specific package & class spec, and constructor
      * arguments. Then, dispatches the event on the stage.
      */
-    private static function CreateAndDispatchEvent(eventPackageAndClass:String, args:Array<Dynamic>) : Void
+    private static function CreateAndDispatchEvent(eventDispatcherId:Int, eventPackageAndClass:String, args:Array<Dynamic>) : Void
     {
         //TraceEvent(eventPackageAndClass, args);
 
@@ -187,12 +202,22 @@ class ExtensionKit
             return;
         }
 
-        stage.dispatchEvent(event);
+		var target:IEventDispatcher = stage;
+		if (eventDispatcherId > 0)
+		{
+			var newtarget:IEventDispatcher = s_eventDispatcherMap.get(eventDispatcherId);
+			if (newtarget != null)
+			{
+				target = newtarget;
+			}
+		}
+
+		target.dispatchEvent(event);
     }
 
-    private static function CreateAndDispatchEventFromJNI(eventPackageAndClass:String, args:String) : Void
+    private static function CreateAndDispatchEventFromJNI(eventDispatcherId:Int, eventPackageAndClass:String, args:String) : Void
     {
-        CreateAndDispatchEvent(eventPackageAndClass, Json.parse(args));
+        CreateAndDispatchEvent(eventDispatcherId, eventPackageAndClass, Json.parse(args));
     }
 
     private static function TraceEvent(eventPackageAndClass:String, args:Array<Dynamic>) : Void

@@ -15,6 +15,7 @@ namespace extensionkit
     {        
         AutoGCRoot* GetHaxeCallbackForDispatchingEvents();
         void SetHaxeCallbackForDispatchingEvents(AutoGCRoot* haxeCallback);
+		void InvokeHaxeCallbackFunctionForDispatchingEvents(int eventDispatcherId, const char* eventClassSpec, va_list params);
         void TriggerTestEvent();
     }
 }
