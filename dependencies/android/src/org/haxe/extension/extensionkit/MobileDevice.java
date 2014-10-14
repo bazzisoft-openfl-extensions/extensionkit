@@ -40,7 +40,6 @@ public class MobileDevice
             @Override
             public void run()
             {
-                Trace.Info("** enabled");
                 s_disableBackKey = false;
             }
         }, delay);
