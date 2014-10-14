@@ -104,7 +104,7 @@ class ExtensionKit
         extensionkit_trigger_test_event();
         #else
         // Just fake it for flash
-        CreateAndDispatchEvent("extensionkit.event.ExtensionKitTestEvent", [ExtensionKitTestEvent.TEST_NATIVE, "string parameter", 12345, 1234.5678]);
+        CreateAndDispatchEvent(0, "extensionkit.event.ExtensionKitTestEvent", [ExtensionKitTestEvent.TEST_NATIVE, "string parameter", 12345, 1234.5678]);
         #end
     }
     
