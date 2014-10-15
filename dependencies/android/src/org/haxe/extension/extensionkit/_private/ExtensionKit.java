@@ -9,6 +9,7 @@ import org.haxe.extension.extensionkit.Trace;
 import org.haxe.lime.HaxeObject;
 
 import android.content.Intent;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
@@ -59,7 +60,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
     
     private static Queue<HaxeEventSpec> s_queuedEvents = new LinkedList<HaxeEventSpec>(); 
     private static HaxeObject s_haxeCallbackObjectForDispatchingEvents = null;
-    private static String s_haxeCallbackFunctionNameForDispatchingEvents = null;    
+    private static String s_haxeCallbackFunctionNameForDispatchingEvents = null;
 
     /**
      * Sets the haxe object/function to be called when a callback event is to be dispatched.
@@ -95,7 +96,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
         
         final String argsJSON = new Gson().toJson(args);
 
-        mainActivity.runOnUiThread(new Runnable() {
+        ((GLSurfaceView) mainView).queueEvent(new Runnable() {
             @Override
             public void run() {
                 s_haxeCallbackObjectForDispatchingEvents.call3(s_haxeCallbackFunctionNameForDispatchingEvents, eventDispatcherId, eventClassSpec, argsJSON);
