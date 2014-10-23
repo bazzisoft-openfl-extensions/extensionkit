@@ -3,12 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "ExtensionKitIPhone.h"
 
 
 namespace extensionkit
 {
     namespace iphone
     {
+        UIColor* UIColorFromRGB(int rgb)
+        {
+            return UIColorFromARGB(rgb | 0xff000000);
+        }
+        
+        UIColor* UIColorFromARGB(int argb)
+        {
+            int blue = argb & 0xff;
+            int green = argb >> 8 & 0xff;
+            int red = argb >> 16 & 0xff;
+            int alpha = argb >> 24 & 0xff;
+            
+            return [UIColor colorWithRed:red/255.0f green:green/255.0f blue:blue/255.0f alpha:alpha/255.0f];
+        }
+        
         bool ClampDimensionsToMaxSize(int* inOutCurrentWidth, int* inOutCurrentHeight, int maxAllowableSize)
         {
             int w = *inOutCurrentWidth;
