@@ -1,3 +1,5 @@
 /ndll
 /project/obj
 /dependencies/android/bin
+/dependencies/android/.classpath
+/dependencies/android/.project
