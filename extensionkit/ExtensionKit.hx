@@ -5,6 +5,8 @@ import flash.events.IEventDispatcher;
 import flash.display.Sprite;
 import flash.display.Stage;
 import haxe.Json;
+import openfl.utils.Timer;
+import openfl.events.TimerEvent;
 
 #if cpp
 import cpp.Lib;
@@ -217,7 +219,14 @@ class ExtensionKit
 
     private static function CreateAndDispatchEventFromJNI(eventDispatcherId:Int, eventPackageAndClass:String, args:String) : Void
     {
-        CreateAndDispatchEvent(eventDispatcherId, eventPackageAndClass, Json.parse(args));
+        function dispatcher(e:TimerEvent) {
+            CreateAndDispatchEvent(eventDispatcherId, eventPackageAndClass, Json.parse(args));
+        }
+
+        var dispatchTimer:Timer = new Timer(1, 1);
+
+        dispatchTimer.addEventListener(TimerEvent.TIMER, dispatcher);
+        dispatchTimer.start();
     }
 
     private static function TraceEvent(eventPackageAndClass:String, args:Array<Dynamic>) : Void

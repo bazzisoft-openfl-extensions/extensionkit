@@ -9,7 +9,6 @@ import org.haxe.extension.extensionkit.Trace;
 import org.haxe.lime.HaxeObject;
 
 import android.content.Intent;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
@@ -96,7 +95,7 @@ public class ExtensionKit extends org.haxe.extension.Extension
         
         final String argsJSON = new Gson().toJson(args);
 
-        ((GLSurfaceView) mainView).queueEvent(new Runnable() {
+        org.haxe.extension.Extension.callbackHandler.post(new Runnable() {
             @Override
             public void run() {
                 s_haxeCallbackObjectForDispatchingEvents.call3(s_haxeCallbackFunctionNameForDispatchingEvents, eventDispatcherId, eventClassSpec, argsJSON);
