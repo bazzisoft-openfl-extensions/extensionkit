@@ -1,10 +1,12 @@
 package extensionkit;
+
 import extensionkit.event.ExtensionKitTestEvent;
 import flash.events.Event;
 import flash.events.IEventDispatcher;
 import flash.display.Sprite;
 import flash.display.Stage;
 import haxe.Json;
+import lime.system.System;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
 
@@ -128,7 +130,7 @@ class ExtensionKit
         #elseif (cpp && mobile)
         return extensionkit_get_temp_directory();
         #elseif !flash
-        return VerifyDirectoryExists(flash.filesystem.File.applicationStorageDirectory.nativePath);
+        return VerifyDirectoryExists(System.applicationStorageDirectory);
         #else
         return null;
         #end
@@ -141,7 +143,7 @@ class ExtensionKit
         #elseif (cpp && mobile)
         return extensionkit_get_private_app_files_directory();
         #elseif !flash
-        return VerifyDirectoryExists(flash.filesystem.File.applicationStorageDirectory.nativePath);
+        return VerifyDirectoryExists(System.applicationStorageDirectory);
         #else
         return null;
         #end
@@ -154,7 +156,7 @@ class ExtensionKit
         #elseif (cpp && mobile)
         return extensionkit_get_public_documents_directory();
         #elseif !flash
-        return VerifyDirectoryExists(flash.filesystem.File.documentsDirectory.nativePath);
+        return VerifyDirectoryExists(System.documentsDirectory);
         #else
         return null;
         #end
