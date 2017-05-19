@@ -225,7 +225,7 @@ class ExtensionKit
             CreateAndDispatchEvent(eventDispatcherId, eventPackageAndClass, Json.parse(args));
         }
 
-        var dispatchTimer:Timer = new Timer(1, 1);
+        var dispatchTimer:Timer = new Timer(50, 1);
 
         dispatchTimer.addEventListener(TimerEvent.TIMER, dispatcher);
         dispatchTimer.start();
